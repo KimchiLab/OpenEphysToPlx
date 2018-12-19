@@ -8,14 +8,8 @@
 
 function OpenEphysRefToSpikesPlexon(dirname)
 
-%% Identify Files
-dir_root = '\\kaytye-fs2.mit.edu\Eyal\Data\DataEPhys\';
-if isempty(strfind(dirname, ':'))
-    dirname = [dir_root dirname];
-end
-cd(dirname);
-
 %% Identify (analog) channel data: wideband neurophys
+cd(dirname);
 files = dir('CH??-REF.mat');
 [~, sort_idx] = sort({files.name}); % Saves as 0 leading, so don't need to sort_nat as in other functions
 files = files(sort_idx);

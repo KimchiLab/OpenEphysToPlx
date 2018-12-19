@@ -13,14 +13,8 @@
 
 function OpenEphysToCommonRef(dirname)
 
-%% Identify Files
-dir_root = '\\kaytye-fs2.mit.edu\Eyal\Data\DataEPhys\';
-if isempty(strfind(dirname, ':'))
-    dirname = [dir_root dirname];
-end
-cd(dirname);
-
 %% Identify (analog) channel data: wideband neurophys
+cd(dirname);
 files = dir('*_CH*.continuous');
 [~, sort_idx] = sort_nat({files.name}); % Since saved as 1..9, 10..16
 files = files(sort_idx);
