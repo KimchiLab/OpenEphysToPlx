@@ -1,5 +1,10 @@
-% % Open Ephys Session to Common Average Reference
-% Take files that have already had the common ref removed and find spikes for plexon
+% function OpenEphysRefToSpikesPlexon(dirname)
+%
+% Take files that have already had the common ref removed and
+% Filter each referenced channel and 
+% Extract spikes to write a plexon file
+% 
+% This function will run faster on local data than on data on the server
 
 function OpenEphysRefToSpikesPlexon(dirname)
 
