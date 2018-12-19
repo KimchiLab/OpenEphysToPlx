@@ -1,0 +1,101 @@
+% function OpenEphysToCommonRef(dirname)
+% 
+% Process openEphys continuous neural data channels to 
+% subtract out a Common Average Reference
+% CAR is calculated by electrode arrays: assuming 16ch arrays for now
+%
+% This function will run faster on local data than on data on the server
+%
+% Ref choices: Currently using median. Can use mean or meadian among channels, for examples
+% Average/Mean: Mem and Math easier than for median
+% Median: More resistant to outliers
+% https://github.com/cortex-lab/spikes/blob/master/preprocessing/applyCARtoDat.m
+
+function OpenEphysToCommonRef(dirname)
+
+%% Identify Files
+dir_root = '\\kaytye-fs2.mit.edu\Eyal\Data\DataEPhys\';
+if isempty(strfind(dirname, ':'))
+    dirname = [dir_root dirname];
+end
+cd(dirname);
+
+%% Identify (analog) channel data: wideband neurophys
+files = dir('*_CH*.continuous');
+[~, sort_idx] = sort_nat({files.name}); % Since saved as 1..9, 10..16
+files = files(sort_idx);
+
+%% Identify banks of 16 channels/presumed arrays
+ch = nan(numel(files), 1);
+for i_f = 1:numel(files)
+    ch_temp = regexp(files(i_f).name, '_CH([0-9]{1,2}).', 'tokens', 'once');
+    ch(i_f) = str2double(ch_temp{1});
+end
+num_ch_per_array = 16;
+idx_array = floor((ch-1)/num_ch_per_array) + 1;
+[name_array, ~, hash_array] = unique(idx_array);
+num_array = max(hash_array);
+
+%% Load and Process data by array and then by channels
+% Load & Process
+fprintf('\nWill process %d channel files split into %d arrays of %d wires.\n', numel(files), num_array, num_ch_per_array);
+
+tic;
+for i_array = 1:num_array
+    idx_ch = find(hash_array == i_array);
+    fprintf('Array %d of %d:\n', i_array, num_array);
+    
+    for i_ch = 1:numel(idx_ch)
+        filename = files(idx_ch(i_ch)).name;
+        fprintf('%s (%d of %d, started processing at %s)\n', filename, i_ch, numel(idx_ch), DateTimestamp);
+
+        % Load data for a given channel from the file
+        all_header(i_ch) = load_open_ephys_header(filename); % Assume all have same info
+        if i_ch == 1
+            all_data = load_open_ephys_data_faster(filename, 'unscaledInt16');
+            all_data(:, 2:numel(idx_ch)) = NaN;
+        else
+            all_data(:, i_ch) = load_open_ephys_data_faster(filename, 'unscaledInt16');
+        end
+
+        % If using mean: can add to CAR and dispose of original data to save memory
+    %     if i_ch == 1
+    %         car = data;
+    %     else
+    %         car = car + data;
+    %     end
+
+        TimeUpdate(i_ch, numel(idx_ch));
+    end
+    
+    % Calculate common ref
+    tic;
+    % "Zero" out each channel first: subtract median of each channel
+    all_data = bsxfun(@minus, all_data, median(all_data,1)); % subtract median of each channel
+    % Find median trace across all channels
+    ref = median(all_data,2);
+    % Subtract median trace from all channels
+    all_data = bsxfun(@minus, all_data, ref); % subtract median of each time point
+    fprintf('Time for median: %.3f sec\n', toc); % Takes ~30 sec for 1hr recording x 16 ch array
+    
+    % Save data for each channel: Not strictly necessary if willing to load again later
+    fprintf('Saving data - CARef for each channel');
+    tic;
+    for i_ch = 1:numel(idx_ch)
+        file_ch = sprintf('CH%02d-Ref', ch(idx_ch(i_ch)));
+        data = all_data(:, i_ch);
+        header = all_header(i_ch);
+        save(file_ch, 'data', 'header', '-v7.3');
+        TimeUpdate(i_ch, numel(idx_ch));
+    end
+    fprintf('Time for saving data: %.3f sec\n', toc);
+
+    % Save Common Ref
+    tic;
+    header = all_header(1);
+    file_ref = sprintf('CommonRef-%d', i_array);
+    save(file_ref, 'ref', 'header', '-v7.3');
+    fprintf('Time for saving ref: %.3f sec\n', toc);
+end
+
+fprintf('Done with Common Ref\n\n');
