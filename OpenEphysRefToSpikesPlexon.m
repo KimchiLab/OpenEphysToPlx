@@ -10,7 +10,7 @@ function OpenEphysRefToSpikesPlexon(dirname)
 
 %% Identify (analog) channel data: wideband neurophys
 cd(dirname);
-files = dir('CH??-REF.mat');
+files = dir('CH*-Ref.mat');
 [~, sort_idx] = sort({files.name}); % Saves as 0 leading, so don't need to sort_nat as in other functions
 files = files(sort_idx);
 
