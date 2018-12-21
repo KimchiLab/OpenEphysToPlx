@@ -4,7 +4,8 @@ Convert open ephys files to plx format files using Matlab, for sorting in Plexon
 The general workflow is:
 1) **OpenEphysToCommonRef.m**: Generate a Common Average Reference and subtract it from each channel
 2) **OpenEphysRefToSpikesPlexon.m**: Filter each referenced channel and extract spikes to write a plexon file
-a next step can include
+
+A next step can include
 3) **OpenEphysAdcToMatlab.m**: Convert ADC files to matlab data: extract events and treadmill data
 
 The input to each argument is the directory in which the continuous data files are.
