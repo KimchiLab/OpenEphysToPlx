@@ -10,6 +10,8 @@
 % Average/Mean: Mem and Math easier than for median
 % Median: More resistant to outliers
 % https://github.com/cortex-lab/spikes/blob/master/preprocessing/applyCARtoDat.m
+%
+% Note: What to do about dirs with multiple sessions/multiple underscores?
 
 function OpenEphysToCommonRef(dirname)
 

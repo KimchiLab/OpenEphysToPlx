@@ -89,6 +89,8 @@ switch(lower(string))
         color = [152,78,163];
     case {'brewerred'}
         color = [228,26,28];
+    case {'brewerorange'}
+        color = [255,127,0];
     otherwise
         color = [1 1 1];
 end
