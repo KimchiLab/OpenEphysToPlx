@@ -56,7 +56,8 @@ set(h, 'Color', ColorPicker('black'), 'LineWidth', line_width);
 colors = ColorGradientBlueGrayRed(numel(h));
 trans = 0.15;
 for i = 1:numel(h)
-    h(i).Color = [colors(i, :) trans];
+    set(h(i), 'Color', [colors(i, :) trans]); % For earlier Matlab releases
+%     h(i).Color = [colors(i, :) trans];
 %     h(i).Color(4) = 0.1; % http://undocumentedmatlab.com/blog/plot-line-transparency-and-color-gradient
 end
 axis tight;
