@@ -44,15 +44,14 @@ for i_file = 1:numel(files)
 end
 fprintf('\n');
 
-%% Plot waveform samples
-grid_axes = PlotWaveformSampleDb(db);
-
 %% Save mat db
 filename = 'DbWaveform';
 save(filename, 'db', '-v7.3');
 
-%% Export plx file for Plexon Offline Sorter
+%% Plot waveform samples
+grid_axes = PlotWaveformSampleDb(db);
 
+%% Export plx file for Plexon Offline Sorter
 % plx_filename = [filename(1:strfind(filename, '.')) 'plx'];
 [a, b, c, d] = regexp(pwd, '\\([\w- ])*');
 plx_filename = d{end}(2:end);
