@@ -54,11 +54,18 @@ set(h, 'Color', ColorPicker('black'), 'LineWidth', line_width);
 % gradient from cold to warm, e.g. blue to red
 % colors = ColorGradientBMR(numel(h));
 colors = ColorGradientBlueGrayRed(numel(h));
+
+% Transparency only works in R2014b and later: setting 2015 as cutoff for speed
+temp_ver = ver('MATLAB');
+mask_ver = datenum(temp_ver.Date) >= datenum(2015,1,1);
 trans = 0.15;
+
 for i = 1:numel(h)
-    set(h(i), 'Color', [colors(i, :) trans]); % For earlier Matlab releases
-%     h(i).Color = [colors(i, :) trans];
-%     h(i).Color(4) = 0.1; % http://undocumentedmatlab.com/blog/plot-line-transparency-and-color-gradient
+    if mask_ver
+        set(h(i), 'Color', [colors(i, :) trans]); % Only works for R2014b and later
+    else
+        set(h(i), 'Color', colors(i, :));
+    end
 end
 axis tight;
 % xlabel('Time (ms)');
