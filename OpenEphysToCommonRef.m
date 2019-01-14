@@ -43,7 +43,7 @@ for i_array = 1:num_array
     
     for i_ch = 1:numel(idx_ch)
         filename = files(idx_ch(i_ch)).name;
-        fprintf('%s (%d of %d, started processing at %s)\n', filename, i_ch, numel(idx_ch), DateTimestamp);
+        fprintf('%s: ', filename);
 
         % Load data for a given channel from the file
         all_header(i_ch) = load_open_ephys_header(filename); % Assume all have same info
@@ -75,7 +75,7 @@ for i_array = 1:num_array
     fprintf('Time for median: %.3f sec\n', toc); % Takes ~30 sec for 1hr recording x 16 ch array
     
     % Save data for each channel: Not strictly necessary if willing to load again later
-    fprintf('Saving data - CARef for each channel');
+    fprintf('Saving data - CARef for each channel:\n');
     tic;
     for i_ch = 1:numel(idx_ch)
         file_ch = sprintf('CH%02d-Ref', ch(idx_ch(i_ch)));
@@ -91,7 +91,7 @@ for i_array = 1:num_array
     header = all_header(1);
     file_ref = sprintf('CommonRef-%d', i_array);
     save(file_ref, 'ref', 'header', '-v7.3');
-    fprintf('Time for saving ref: %.3f sec\n', toc);
+    fprintf('Time for saving common ref: %.3f sec\n', toc);
 end
 
-fprintf('Done with Common Ref\n\n');
+fprintf('Done with all Common Ref\n\n');

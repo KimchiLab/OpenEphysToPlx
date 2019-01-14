@@ -32,6 +32,7 @@ for i_dir = 1:numel(dirs)
         OpenEphysToCommonRef(dirname);
         OpenEphysRefToSpikesPlexon(dirname);
         OpenEphysAdcToMatlab(dirname);
+%         OpenEphysPlxMatToNex(dirname);
     end
     fprintf('\n');
 end

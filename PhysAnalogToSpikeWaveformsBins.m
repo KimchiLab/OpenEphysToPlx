@@ -13,8 +13,10 @@ thresh_sigma = 5; % Sigma threshold units rather than MAD. http://www.scholarped
 % Fs = round(1/median(diff(timestamps(1:1e3))));
 
 % Define spike window (how much to clip before and after crossing threshold)
-ts_pre = -0.5e-3; % in ms
-ts_post = 0.75e-3; % in ms
+% Initial runs: -500:750ms: Extraneous info pre, not enough info post to complete fall of waveform
+% Praneeth code: -500:1000ms: Unclear if these are the parameters used
+ts_pre = -0.4e-3; % in ms
+ts_post = 1e-3; % in ms
 min_isi = 0.5e-3; % minimum time between spikes
 bin_isi = round(min_isi * Fs);
 
