@@ -3,7 +3,7 @@ function [spike_wf, spike_pos] = PhysAnalogToSpikeWaveformsBins(data, Fs, bitVol
 %% Settings
 % Filter analog signal settings for spikes
 freq_lo = 0.3e3;
-freq_hi = 6e3;
+freq_hi = 7e3;
 notch_flag = true;
 
 % Spike Threshold settings
@@ -68,10 +68,14 @@ idx_bins = num_pre:num_post;
 % Discard spikes at the edges
 spike_pos = spike_pos((0-num_pre) < spike_pos & spike_pos < numel(data_filt) - num_post);
 
-% Extract spike waveforms
+% Extract spike waveforms: 
+% Make sure correct orientation if only 1 spike found: NumSpikes x NumBins
 % spike_wf = zeros(num_spikes, num_bins);
 idx_spike_wf = bsxfun(@plus, spike_pos, idx_bins);
 spike_wf = data_filt(idx_spike_wf);
+if numel(spike_pos) == 1 && size(spike_wf, 1) > 1
+    spike_wf = spike_wf';
+end
 % ts = timestamps(spike_pos);
 
 % Automatic large artifact removal? Eliminate any point that swing up and down 1 mV
@@ -84,7 +88,7 @@ mask_amp = amp < bit_cutoff;
 
 spike_wf = spike_wf(mask_amp, :);
 spike_pos = spike_pos(mask_amp, :);
-fprintf('Eliminated %d of %d (%.1f%%) waveforms with amp > %d uV\n', sum(~mask_amp), numel(mask_amp), mean(~mask_amp)*100, volt_cutoff);
+% fprintf('Eliminated %d of %d (%.1f%%) waveforms with amp > %d uV\n', sum(~mask_amp), numel(mask_amp), mean(~mask_amp)*100, volt_cutoff);
 
 % Only process crossings > some distance apart? At least 0.5ms apart--only capture larger waveform if within that time
 % min_val = min(spike_wf, [], 2);
@@ -104,4 +108,4 @@ end
 
 spike_wf = spike_wf(~mask_remove, :);
 spike_pos = spike_pos(~mask_remove, :);
-fprintf('Eliminated %d of %d (%.1f%%) waveforms with with isi < %.3f ms\n', sum(mask_remove), numel(mask_remove), mean(mask_remove)*100, min_isi*1e3);
+% fprintf('Eliminated %d of %d (%.1f%%) waveforms with with isi < %.3f ms\n', sum(mask_remove), numel(mask_remove), mean(mask_remove)*100, min_isi*1e3);

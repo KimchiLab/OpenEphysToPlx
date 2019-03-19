@@ -56,7 +56,7 @@ switch(lower(string))
     case {'darkgreen'}
         color = [20 120 0];
     case {'orange'}
-        color = [230 159 0];
+        color = [230 130 0];
     case {'pink'}
         color = [255 220 220];
     case {'darkpink'}

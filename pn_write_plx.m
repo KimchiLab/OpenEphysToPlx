@@ -65,7 +65,7 @@ fwrite(plx_id, MI, 'integer*4');            % minute
 fwrite(plx_id, SC, 'integer*4');            % second
 fwrite(plx_id, 0, 'integer*4');             % fast read (reserved)
 fwrite(plx_id, freq, 'integer*4');          % waveform frequency
-fwrite(plx_id, max(cellfun(@max, ts))*freq, 'double');     % last timestamp
+fwrite(plx_id, max(vertcat(ts{:}))*freq, 'double');     % last timestamp
 fwrite(plx_id, pad256(1:56), 'char');       % should make 256 bytes
 
 % now the count arrays (with counts of zero)

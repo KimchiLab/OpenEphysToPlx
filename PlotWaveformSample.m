@@ -18,6 +18,9 @@ end
 line_width = 0.001;
 
 [num_spikes, num_bins] = size(spike_waveforms);
+if num_spikes == 0
+    return;
+end
 
 max_wf = 1e3;
 num_plot = min(max_wf, num_spikes);
