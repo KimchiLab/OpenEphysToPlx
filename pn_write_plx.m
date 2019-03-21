@@ -36,7 +36,7 @@ function [nWritten] = pn_write_plx(filename, chArr, freq, ts, wave, units)
 %
 %
 
-npw = size(wave{1}, 2);
+npw = size(vertcat(wave{:}), 2); % Will fail if no spike waveforms in first channel
 if(length(filename) == 0)
    [fname, pathname] = uigetfile('*.plx', 'Select a plx file');
 	filename = strcat(pathname, fname);

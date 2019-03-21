@@ -33,7 +33,7 @@ for i_file = 1:numel(files)
     Fs = header.sampleRate;
     bitVolts = header.bitVolts;
     
-    [db(i_file).spike_wf, db(i_file).spike_ts] = PhysAnalogToSpikeWaveformsBins(data, Fs, bitVolts);
+    [db(i_file).spike_wf, db(i_file).spike_ts, db(i_file).spike_set] = PhysAnalogToSpikeWaveformsBins(data, Fs, bitVolts);
     db(i_file).spike_wf = db(i_file).spike_wf * bitVolts;
     db(i_file).spike_ts = db(i_file).spike_ts / Fs;
 %     TimeUpdate(i_file, numel(files));
@@ -44,14 +44,16 @@ fprintf('\n');
 filename = 'DbWaveform';
 save(filename, 'db', '-v7.3');
 
+%% Generate filename for saving
+[a, b, c, d] = regexp(pwd, '\\([\w- ])*');
+name_session = d{end}(2:end);
+
 %% Plot waveform samples
 grid_axes = PlotWaveformSampleDb(db);
+ExportPNG(['wf-' name_session]);
 
 %% Export plx file for Plexon Offline Sorter
-% plx_filename = [filename(1:strfind(filename, '.')) 'plx'];
-[a, b, c, d] = regexp(pwd, '\\([\w- ])*');
-plx_filename = d{end}(2:end);
-plx_filename = [plx_filename '.plx'];
+plx_filename = [name_session '.plx'];
 fprintf('Saving %s: ',plx_filename);
 
 % units = zeros(num_spikes, 1); % unsorted

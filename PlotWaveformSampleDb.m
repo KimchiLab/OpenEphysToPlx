@@ -23,13 +23,13 @@ num_row = ceil(num_ch / num_col);
 grid_axes = AxesGrid(num_row, num_col, boundaries, margins)';
 for i_ch = 1:numel(db)
     axes(grid_axes(i_ch));
-    PlotWaveformSample(db(i_ch).spike_wf);
+    PlotWaveformSample(db(i_ch).spike_wf, db(i_ch).spike_set);
     fr = numel(db(i_ch).spike_ts) / dur;
     title(sprintf('Ch%d = %.1f Hz', i_ch, fr));
     if 1 ~= mod(i_ch, num_col)
         set(gca, 'YTickLabel', []);
     end
-    if i_ch < (numel(grid_axes) - num_col)
+    if i_ch <= (numel(grid_axes) - num_col)
         set(gca, 'XTickLabel', []);
     end
 end

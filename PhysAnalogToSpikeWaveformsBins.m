@@ -1,4 +1,4 @@
-function [spike_wf, spike_pos] = PhysAnalogToSpikeWaveformsBins(data, Fs, bitVolts)
+function [spike_wf, spike_pos, spike_set] = PhysAnalogToSpikeWaveformsBins(data, Fs, bitVolts)
 
 %% Settings
 % Filter analog signal settings for spikes
@@ -16,8 +16,8 @@ thresh_sigma = 5; % Sigma threshold units rather than MAD. http://www.scholarped
 % Initial runs: -500:750ms: Extraneous info pre, not enough info post to complete fall of waveform
 % Praneeth code: -500:1000ms: Unclear if these are the parameters used
 % Chris run: -300:1000ms: Unclear if these are the parameters used
-ts_pre = -0.375e-3; % in ms
-ts_post = 1e-3; % in ms
+spike_set.ts_pre = -0.375e-3; % in ms
+spike_set.ts_post = 1e-3; % in ms
 min_isi = 0.5e-3; % minimum time between spikes
 bin_isi = round(min_isi * Fs);
 
@@ -60,23 +60,26 @@ for i_spike = 1:num_spikes
 end
 
 % Define spike bins
-num_pre = floor(ts_pre * Fs);
-num_post = ceil(ts_post * Fs);
-idx_bins = num_pre:num_post;
-% num_bins = numel(idx_bins);
+spike_set.num_pre = floor(spike_set.ts_pre * Fs);
+spike_set.num_post = ceil(spike_set.ts_post * Fs);
+idx_bins = spike_set.num_pre:spike_set.num_post;
+spike_set.num_bins = numel(idx_bins);
 
 % Discard spikes at the edges
-spike_pos = spike_pos((0-num_pre) < spike_pos & spike_pos < numel(data_filt) - num_post);
+spike_pos = spike_pos((0-spike_set.num_pre) < spike_pos & spike_pos < numel(data_filt) - spike_set.num_post);
 
 % Extract spike waveforms: 
-% Make sure correct orientation if only 1 spike found: NumSpikes x NumBins
-% spike_wf = zeros(num_spikes, num_bins);
+% Following line bsxfun will fail if no spikes
+if 0 == numel(spike_pos)
+    spike_wf = [];
+    return;
+end
 idx_spike_wf = bsxfun(@plus, spike_pos, idx_bins);
 spike_wf = data_filt(idx_spike_wf);
+% Make sure correct orientation if only 1 spike found: NumSpikes x NumBins
 if numel(spike_pos) == 1 && size(spike_wf, 1) > 1
     spike_wf = spike_wf';
 end
-% ts = timestamps(spike_pos);
 
 % Automatic large artifact removal? Eliminate any point that swing up and down 1 mV
 volt_cutoff = 2e3; % Units in uV, so 1e3 = 1mV

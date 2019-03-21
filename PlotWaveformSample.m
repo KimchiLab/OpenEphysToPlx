@@ -1,7 +1,7 @@
-function h = PlotWaveformSample(spike_waveforms, Fs)
+function h = PlotWaveformSample(spike_waveforms, spike_set)
 
 if nargin < 2
-    Fs = 30e3;
+    spike_set.Fs = 30e3;
 end
 
 % % previous cutoff evaluation moved to another function
@@ -49,7 +49,11 @@ idx_wf = round(linspace(1, num_spikes, num_plot));
 % % plot these second so that they are on top
 
 %% Plot waveforms
-ts = (0:num_bins-1) / Fs;
+if isfield(spike_set, 'ts_pre')
+    ts = linspace(spike_set.ts_pre, spike_set.ts_post, spike_set.num_bins);
+else
+    ts = (0:num_bins-1) / spike_set.Fs;
+end
 ts = ts * 1e3; % Convert from sec to ms
 h = plot(ts, spike_waveforms(idx_wf, :)');
 set(h, 'Color', ColorPicker('black'), 'LineWidth', line_width);
