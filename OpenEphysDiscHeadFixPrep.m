@@ -1,15 +1,13 @@
 % OpenEphysDiscHeadFixPrep
 %
-% Script to go through multiple OpenEphys directories and extra data
+% Script to go through multiple OpenEphys directories and export data
 % to various formats, including Plexon format for offline sorting
 % 
 % This calls 3 main functions:
 % OpenEphysToCommonRef: Creates a Common Average Reference for denoising for each array
 % OpenEphysRefToSpikesPlexon: Uses ref corrected channels to find spikes and creates a plexon format file for sorting
 % OpenEphysToLFP: Convert wideband data to downsampled LFP data
-% OpenEphysAdcToMatlab: Converts OpenEphys ADC files to a matlab file with events and/or treadmill data
-% 
-% Planned updates: Put events in file for sorting or .nex file
+% OpenEphysAdcToDiscHeadFixMatlab: Converts OpenEphys ADC files to a matlab file with events and/or treadmill data
 
 function OpenEphysDiscHeadFixPrep(dir_name)
 
