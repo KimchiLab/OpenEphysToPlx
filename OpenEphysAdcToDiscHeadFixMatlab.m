@@ -1,23 +1,15 @@
-function OpenEphysAdcToDiscHeadFixMatlab(dirname)
+function OpenEphysAdcToDiscHeadFixMatlab(dir_name)
 
-%% Identify (analog) channel data: analog/behavioral events
-% dirname = 'C:\Users\Eyal\Dropbox (KimchiLab)\MATLAB\openEphys\TempData';
-cd(dirname);
-files = dir('*_ADC*.continuous');
-[~, sort_idx] = sort_nat({files.name}); % Since saved as 1..9, 10..16
-files = files(sort_idx);
-if isempty(files)
-    fprintf('No ADC files for %s\n', dirname);
+%% Check to see if files already exist
+file_mask = 'DiscHeadFixADC.mat';
+file_temp = dir(file_mask);
+if ~isempty(file_temp)
+    fprintf('%s already exists for %s\n', file_mask, dir_name);
     return;
 end
 
-% %% Ignore discontinuous recording files: flagged with _n, e.g. 100_CH10_2.continuous
-mask_regexp = cellfun(@isempty, regexp({files.name}, '^\d+_ADC\d+_\d+'));
-if sum(~mask_regexp)
-    fprintf('Interrupted files present.\n');
-end
-files = files(mask_regexp);
-
+%% Identify (analog) channel data: analog/behavioral events
+files = OpenEphysInterruptedFiles(dir_name, 'ADC');
 
 %% Load and Process data by channels
 fprintf('Loading ADC data\n');

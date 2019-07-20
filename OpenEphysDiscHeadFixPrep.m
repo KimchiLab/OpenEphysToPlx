@@ -15,12 +15,12 @@ cd(dir_name);
 [a, b, c, d] = regexp(pwd, '\\([\w- ])*');
 name_session = d{end}(2:end);
 plx_filename = [name_session '.plx'];
-% % Check if file already exists?
+% Check if file already exists: Within each sub function better
 % if exist(plx_filename, 'file')
 %     fprintf('File %s already exists\n', plx_filename);
 % else
     fclose all; % Have had errors with files open, some being left open by utils?
-    % Check if interrupted recordings are present: Skip files within function below for now, process as sets of different recordings in future
+    % Following functions check internally not to overwrite files previously
     OpenEphysToCommonRef(dir_name);
     OpenEphysRefToSpikesPlexon(dir_name); % This is based on referenced channels
     OpenEphysToLFP(dir_name); % Processes one channel at a time. Will be previously loaded, but simpler to do sequentially. This is not based on referenced channels

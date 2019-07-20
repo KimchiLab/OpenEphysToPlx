@@ -1,4 +1,4 @@
-% function OpenEphysToCommonRef(dirname)
+% function OpenEphysToCommonRef(dir_name)
 % 
 % Process openEphys continuous neural data channels to 
 % subtract out a Common Average Reference
@@ -13,20 +13,21 @@
 %
 % Note: What to do about dirs with multiple sessions/multiple underscores?
 
-function OpenEphysToCommonRef(dirname)
+function OpenEphysToCommonRef(dir_name)
 
 %% Identify (analog) channel data: wideband neurophys
-cd(dirname);
-files = dir('*_CH*.continuous');
-[~, sort_idx] = sort_nat({files.name}); % Since saved as 1..9, 10..16
-files = files(sort_idx);
+files = OpenEphysInterruptedFiles(dir_name, 'CH');
 
-% %% Ignore discontinuous recording files: flagged with _n, e.g. 100_CH10_2.continuous
-mask_regexp = cellfun(@isempty, regexp({files.name}, '^\d+_CH\d+_\d+'));
-if sum(~mask_regexp)
-    fprintf('Interrupted files present.\n');
+%% Check to see if referenced files already exist
+file_commonref = dir('CommonRef*.mat');
+if ~isempty(file_commonref)
+    fprintf('Common ref files already exist for %s\n', dir_name);
 end
-files = files(mask_regexp);
+file_ref = dir('CH*-Ref.mat');
+if numel(file_ref) == numel(files)
+    fprintf('Ch ref files already exist for %s\n', dir_name);
+    return;
+end
 
 %% Identify banks of 16 channels/presumed arrays
 ch = nan(numel(files), 1);

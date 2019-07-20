@@ -6,30 +6,21 @@ if nargin < 1
     dir_name = pwd;
 end
 
+%% Check to see if files already exist
+file_lfp = dir('*-LFP.mat');
+if ~isempty(file_lfp)
+    fprintf('LFP file already exists for %s\n', dir_name);
+    return;
+end
 
 %% Identify (analog) channel data: wideband neurophys
-addpath([dirDropboxKimchiLab '\KimchiLab\MATLAB\OpBoxPhys']);
-cd(dir_name);
-files = dir('*_CH*.continuous');
-[~, sort_idx] = sort_nat({files.name}); % Since saved as 1..9, 10..16
-files = files(sort_idx);
-
-% %% Ignore discontinuous recording files: flagged with _n, e.g. 100_CH10_2.continuous
-mask_regexp = cellfun(@isempty, regexp({files.name}, '^\d+_CH\d+_\d+'));
-if sum(~mask_regexp)
-    fprintf('Interrupted files present.\n');
-end
-files = files(mask_regexp);
-
+files = OpenEphysInterruptedFiles(dir_name, 'CH');
 
 %% Load and Process data by channels
 Fs_target = 1e3;
 data.num_ch_analog = numel(files);
 data.ch = nan(data.num_ch_analog, 1);
 
-% What to do for multiple/restart files?
-
-% tic;
 for i_file = 1:numel(files)
     filename = files(i_file).name;
     fprintf('%s (%d of %d, started processing at %s)\n', filename, i_file, numel(files), DateTimestamp);
@@ -43,14 +34,12 @@ for i_file = 1:numel(files)
     if i_file == 1
         data.Fs_orig = Fs;
         data.Fs = Fs_target;
-%         data.ts = timestamps(1:Fs_ratio:end)/Fs; % Timestamps are actually in units of samples. What if ratio not integer?
-        data.ts = timestamps(1:Fs_ratio:end); % Timestamps are in units of sec. What if ratio not integer?
+        data.ts = timestamps(round(1:Fs_ratio:end)); % Timestamps are already in units of sec
         if numel(data.ts) ~= size(data.analog, 2)
             fprintf('Timestamp / Data mistmatch on %s\\%s\n', dir_name, filename);
         end
         data.analog(data.num_ch_analog, 1) = NaN;
     end
-%     TimeUpdate(i_file, numel(files));
 end
 
 

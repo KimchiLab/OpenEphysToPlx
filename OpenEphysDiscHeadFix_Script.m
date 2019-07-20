@@ -9,14 +9,15 @@ clf;
 
 %% Identify Directories
 % Specify a root path, within which this will try to process each subdirectory
-% dir_root = '\\kaytye.mit.edu\Share3\Tony\1 - NEW Recordings\Eyal ChAT Recordings';
-dir_root = '\\kaytye-fs2.mit.edu\Share\Eyal\Data\DataEPhys\4648';
+dir_root = '\\kaytye-fs2.mit.edu\Share\Eyal\Data\DataEPhys\ChAT_BLA_PFC';
 % dir_root = 'D:\DataEphys';
+% dir_root = 'C:\temp';
 cd(dir_root);
 
 dirs = dir('*');
-dirs = dirs(3:end); % Skip . and .. on windows
 dirs = dirs([dirs.isdir]);
+mask_dir = cellfun(@isempty, regexp({dirs.name}, '^\.')); % Skip . and .. on windows
+dirs = dirs(mask_dir);
 
 tic;
 for i_dir = 1:numel(dirs)

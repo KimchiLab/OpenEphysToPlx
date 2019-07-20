@@ -1,4 +1,4 @@
-% function OpenEphysRefToSpikesPlexon(dirname)
+% function OpenEphysRefToSpikesPlexon(dir_name)
 %
 % Take files that have already had the common ref removed and
 % Filter each referenced channel and 
@@ -6,10 +6,21 @@
 % 
 % This function will run faster on local data than on data on a server
 
-function OpenEphysRefToSpikesPlexon(dirname)
+function OpenEphysRefToSpikesPlexon(dir_name)
+
+%% Check if output files exist already, if so skip/don't overwrite
+file_db = dir('DbWaveform.mat');
+if ~isempty(file_db)
+    fprintf('DbWaveform.mat already exists for %s\n', dir_name);
+end
+file_plx = dir('*.plx');
+if ~isempty(file_plx)
+    fprintf('Plx file already exists for %s\n', dir_name);
+    return;
+end
 
 %% Identify (analog) channel data: wideband neurophys
-cd(dirname);
+cd(dir_name);
 files = dir('CH*-Ref.mat');
 [~, sort_idx] = sort({files.name}); % Saved as 0 leading, so don't need to sort_nat as in other functions
 files = files(sort_idx);
