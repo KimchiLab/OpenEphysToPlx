@@ -9,9 +9,7 @@ clf;
 
 %% Identify Directories
 % Specify a root path, within which this will try to process each subdirectory
-dir_root = '\\kaytye-fs2.mit.edu\Share\Eyal\Data\DataEPhys\ChAT_BLA_PFC';
-% dir_root = 'D:\DataEphys';
-% dir_root = 'C:\temp';
+dir_root = 'D:\DataEphys';
 cd(dir_root);
 
 dirs = dir('*');
